@@ -7,7 +7,7 @@
     "build": "npm i && npm run clean && npm run babel-build",
     "start": "npm run build && node ./build/index.js",
     "babel-build": "babel -d ./build ./src -s",
-    "clean": "rm -rf && mkdir build",
+    "clean": "rm -rf build && mkdir build",
     "dev": "nodemon src/index.js --exec babel-node --trace-warnings"
   },
   "keywords": [],
