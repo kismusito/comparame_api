@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "",
+    "start": "node src/index.js",
     "dev": "nodemon src/index.js --exec babel-node --trace-warnings"
   },
   "keywords": [],
