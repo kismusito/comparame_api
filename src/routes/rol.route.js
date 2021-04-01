@@ -4,7 +4,7 @@ import { AuthMiddleware } from "../Middlewares/AuthMiddleware";
 const router = express.Router();
 
 router
-    .get("/", AuthMiddleware, RolController.getRols)
+    .get("/", RolController.getRols)
     .post("/", AuthMiddleware, RolController.createRol)
     .put("/", AuthMiddleware, RolController.updateRol)
     .delete("/", AuthMiddleware, RolController.deleteRol);
