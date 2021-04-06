@@ -26,6 +26,7 @@ rolMethods.getRols = async (req, res) => {
             message: "Rols found",
         });
     } catch (error) {
+        console.log(error);
         return res.status(405).json({
             status: false,
             message: "Ha ocurrido un error, por favor intentalo nuevamente.",
