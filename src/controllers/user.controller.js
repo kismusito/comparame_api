@@ -59,7 +59,7 @@ userMethods.login = async (req, res) => {
                     } else {
                         return res.status(405).json({
                             status: false,
-                            message: "There was an error, please try again.",
+                            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
                         });
                     }
                 } else {
@@ -85,7 +85,7 @@ userMethods.login = async (req, res) => {
         console.log(error);
         return res.status(405).json({
             status: false,
-            message: "There was an error, please try again.",
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
         });
     }
 };
@@ -166,7 +166,7 @@ userMethods.register = async (req, res) => {
                 } else {
                     return res.status(405).json({
                         status: false,
-                        message: "There was an error, please try again.",
+                        message: "Ha ocurrido un error, por favor intentalo nuevamente.",
                     });
                 }
             } else {
@@ -185,7 +185,7 @@ userMethods.register = async (req, res) => {
     } catch (error) {
         return res.status(405).json({
             status: false,
-            message: "There was an error, please try again.",
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
         });
     }
 };
@@ -230,10 +230,9 @@ userMethods.authenticate = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error);
         return res.status(405).json({
             status: false,
-            message: "There was an error, please try again.",
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
         });
     }
 };

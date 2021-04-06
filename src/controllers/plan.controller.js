@@ -68,7 +68,7 @@ planMethods.createPlan = async (req, res) => {
             } catch (error) {
                 return res.status(405).json({
                     status: false,
-                    message: "There was an error, please try again.",
+                    message: "Ha ocurrido un error, por favor intentalo nuevamente.",
                 });
             }
         } else {
@@ -81,7 +81,7 @@ planMethods.createPlan = async (req, res) => {
     } else {
         return res.status(400).json({
             status: false,
-            message: "You not have permissions for access.",
+            message: "No tienes permiso para acceder a este recurso.",
         });
     }
 };

@@ -3,7 +3,9 @@ const ac = new AccessControl();
 
 ac.grant("client").readAny("product");
 
-ac.grant("supermaker").readAny("plan");
+ac.grant("client").readOwn("profile").updateOwn("profile");
+
+ac.grant("supermaker").extend("client").readAny("plan");
 
 ac.grant("admin")
     .extend("supermaker")

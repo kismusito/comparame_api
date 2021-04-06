@@ -13,7 +13,9 @@ const rolMethods = {};
  */
 rolMethods.getRols = async (req, res) => {
     try {
-        const rols = await Rol.find({}, { _id: true, rolName: true });
+        const rols = await Rol.find({}, { _id: true, rolName: true })
+            .where("rolName")
+            .ne("admin");
         const changeRolName = rols.map((rol) => {
             rol.rolName = rolsFrontEndName[rol.rolName];
             return rol;
@@ -26,7 +28,7 @@ rolMethods.getRols = async (req, res) => {
     } catch (error) {
         return res.status(405).json({
             status: false,
-            message: "There was an error, please try again.",
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
         });
     }
 };
@@ -52,6 +54,8 @@ rolMethods.createRol = async (req, res) => {
                         rolName: rol_name,
                     });
 
+                    console.log(rol);
+
                     if (await rol.save()) {
                         return res.status(201).json({
                             status: false,
@@ -60,7 +64,7 @@ rolMethods.createRol = async (req, res) => {
                     } else {
                         return res.status(405).json({
                             status: false,
-                            message: "There was an error, please try again.",
+                            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
                         });
                     }
                 } else {
@@ -78,13 +82,13 @@ rolMethods.createRol = async (req, res) => {
         } else {
             return res.status(400).json({
                 status: false,
-                message: "You not have permissions for access.",
+                message: "No tienes permiso para acceder a este recurso.",
             });
         }
     } catch (error) {
         return res.status(405).json({
             status: false,
-            message: "There was an error, please try again.",
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
         });
     }
 };
@@ -123,7 +127,7 @@ rolMethods.updateRol = async (req, res) => {
                                 return res.status(405).json({
                                     status: false,
                                     message:
-                                        "There was an error, please try again.",
+                                        "Ha ocurrido un error, por favor intentalo nuevamente.",
                                 });
                             }
                         } else {
@@ -153,13 +157,13 @@ rolMethods.updateRol = async (req, res) => {
         } else {
             return res.status(400).json({
                 status: false,
-                message: "You not have permissions for access.",
+                message: "No tienes permiso para acceder a este recurso.",
             });
         }
     } catch (error) {
         return res.status(405).json({
             status: false,
-            message: "There was an error, please try again.",
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
         });
     }
 };
@@ -200,7 +204,7 @@ rolMethods.deleteRol = async (req, res) => {
                     } else {
                         return res.status(405).json({
                             status: false,
-                            message: "There was an error, please try again.",
+                            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
                         });
                     }
                 } else {
@@ -218,13 +222,13 @@ rolMethods.deleteRol = async (req, res) => {
         } else {
             return res.status(400).json({
                 status: false,
-                message: "You not have permissions for access.",
+                message: "No tienes permiso para acceder a este recurso.",
             });
         }
     } catch (error) {
         return res.status(405).json({
             status: false,
-            message: "There was an error, please try again.",
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
         });
     }
 };

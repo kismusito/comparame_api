@@ -46,9 +46,17 @@ const userSchema = new Schema({
     favorite_products: [
         {
             type: Types.ObjectId,
-            ref: "Product"
-        }
-    ]
+            ref: "Product",
+        },
+    ],
+    created_at: {
+        type: Date,
+        default: new Date(),
+    },
+    updated_at: {
+        type: Date,
+        default: new Date(),
+    },
 });
 
 userSchema.methods.confirmPassword = function (password) {
@@ -56,7 +64,6 @@ userSchema.methods.confirmPassword = function (password) {
 };
 
 userSchema.methods.encryptPassword = async (password) => {
-    
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(password, salt);
 };
