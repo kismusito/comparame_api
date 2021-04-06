@@ -2,7 +2,13 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import path from "path";
-import { PlanRoutes, UserRoute, RolRoutes , ProfileRoutes} from "./routes";
+import {
+    PlanRoutes,
+    UserRoute,
+    RolRoutes,
+    ProfileRoutes,
+    ProductRoutes,
+} from "./routes";
 
 // Use only in development mode.
 import morgan from "morgan";
@@ -30,5 +36,6 @@ app.use("/plan", PlanRoutes);
 app.use("/user", UserRoute);
 app.use("/profile", ProfileRoutes);
 app.use("/rol", RolRoutes);
+app.use("/product", ProductRoutes);
 
 export default app;
