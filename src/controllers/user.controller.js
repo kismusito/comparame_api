@@ -54,7 +54,7 @@ userMethods.login = async (req, res) => {
                             status: true,
                             user,
                             token,
-                            message: "Correct credentials.",
+                            message: "Credenciales correctas.",
                         });
                     } else {
                         return res.status(405).json({
@@ -65,20 +65,20 @@ userMethods.login = async (req, res) => {
                 } else {
                     return res.status(400).json({
                         status: false,
-                        message: "Password or email are incorrect.",
+                        message: "El email o la contraseña son incorrectas.",
                     });
                 }
             } else {
                 return res.status(400).json({
                     status: false,
-                    message: "Password or email are incorrect.",
+                    message: "El email o la contraseña son incorrectas.",
                 });
             }
         } else {
             return res.status(400).json({
                 status: false,
                 errors: validateFields.errors,
-                message: "The following fields has errors.",
+                message: "Los siguientes campos contienen errores.",
             });
         }
     } catch (error) {
@@ -136,7 +136,7 @@ userMethods.register = async (req, res) => {
                 if (checkEmail) {
                     return res.status(400).json({
                         status: false,
-                        message: "The email is already taken.",
+                        message: "El email ya esta en uso.",
                     });
                 }
 
@@ -144,7 +144,7 @@ userMethods.register = async (req, res) => {
                 if (checkUsername) {
                     return res.status(400).json({
                         status: false,
-                        message: "The username is already taken.",
+                        message: "El nombre de usuario ya esta en uso.",
                     });
                 }
 
@@ -161,7 +161,7 @@ userMethods.register = async (req, res) => {
                 if (await user.save()) {
                     return res.status(201).json({
                         status: true,
-                        message: "User registered successfully.",
+                        message: "Te has registrado correctamente.",
                     });
                 } else {
                     return res.status(405).json({
@@ -172,14 +172,14 @@ userMethods.register = async (req, res) => {
             } else {
                 return res.status(400).json({
                     status: false,
-                    message: "The rol id is incorrect.",
+                    message: "El id del rol es incorrecto.",
                 });
             }
         } else {
             return res.status(400).json({
                 status: false,
                 errors: validateFields.errors,
-                message: "The following fields has errors.",
+                message: "Los siguientes campos contienen errores.",
             });
         }
     } catch (error) {
@@ -203,7 +203,7 @@ userMethods.authenticate = async (req, res) => {
         if (!token) {
             return res.status(200).json({
                 status: false,
-                message: "Token is required.",
+                message: "El token es requerido.",
             });
         }
 
@@ -221,12 +221,12 @@ userMethods.authenticate = async (req, res) => {
                 status: true,
                 token,
                 user,
-                message: "Correct token",
+                message: "El token es correcto",
             });
         } else {
             return res.status(200).json({
                 status: false,
-                message: "The token is incorrect.",
+                message: "El token es incorrecto.",
             });
         }
     } catch (error) {

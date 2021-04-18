@@ -88,7 +88,7 @@ planMethods.createPlan = async (req, res) => {
                     return res.status(201).json({
                         status: false,
                         plan,
-                        message: "Plan created successfully.",
+                        message: "El plan ha sido creado correctamente.",
                     });
                 }
             } catch (error) {
@@ -102,7 +102,7 @@ planMethods.createPlan = async (req, res) => {
             return res.status(400).json({
                 status: false,
                 errors: validateFields.errors,
-                message: "The following fields has errors.",
+                message: "Los siguientes campos contienen errores.",
             });
         }
     } else {

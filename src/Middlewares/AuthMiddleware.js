@@ -26,13 +26,13 @@ export const AuthMiddleware = async (req, res, next) => {
                 } else {
                     return res.status(400).json({
                         status: false,
-                        message: "User not found.",
+                        message: "No se ha encontrado al usuario.",
                     });
                 }
             } else {
                 return res.status(400).json({
                     status: false,
-                    message: "Invalid token.",
+                    message: "Token invalido.",
                 });
             }
         } catch (error) {
@@ -52,7 +52,7 @@ export const AuthMiddleware = async (req, res, next) => {
     } else {
         return res.status(400).json({
             status: false,
-            message: "Token is required.",
+            message: "El token es requerido.",
         });
     }
 };

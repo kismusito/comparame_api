@@ -23,7 +23,7 @@ rolMethods.getRols = async (req, res) => {
         return res.status(200).json({
             status: true,
             data: changeRolName,
-            message: "Rols found",
+            message: "Se han encontrado roles.",
         });
     } catch (error) {
         return res.status(405).json({
@@ -70,13 +70,13 @@ rolMethods.createRol = async (req, res) => {
                 } else {
                     return res.status(400).json({
                         status: false,
-                        message: "The rol name is not allowed.",
+                        message: "El nombre del rol no esta permitido.",
                     });
                 }
             } else {
                 return res.status(400).json({
                     status: false,
-                    message: "The rol name is required.",
+                    message: "El nombre del rol es requerido.",
                 });
             }
         } else {
@@ -121,7 +121,7 @@ rolMethods.updateRol = async (req, res) => {
                             ) {
                                 return res.status(201).json({
                                     status: false,
-                                    message: "Rol updated successfully.",
+                                    message: "El rol ha sido actualizado correctamente.",
                                 });
                             } else {
                                 return res.status(405).json({
@@ -133,25 +133,25 @@ rolMethods.updateRol = async (req, res) => {
                         } else {
                             return res.status(400).json({
                                 status: false,
-                                message: "The rolID is incorrect.",
+                                message: "El rolID es incorrecto.",
                             });
                         }
                     } else {
                         return res.status(400).json({
                             status: false,
-                            message: "The rol name is not allowed.",
+                            message: "El nombre del rol no esta permitido.",
                         });
                     }
                 } else {
                     return res.status(400).json({
                         status: false,
-                        message: "The rol name is required.",
+                        message: "El nombre del rol es requerido.",
                     });
                 }
             } else {
                 return res.status(400).json({
                     status: false,
-                    message: "The rol id is required.",
+                    message: "El id rel rol es requerido.",
                 });
             }
         } else {
@@ -192,14 +192,14 @@ rolMethods.deleteRol = async (req, res) => {
                         return res.status(400).json({
                             status: false,
                             message:
-                                "This role is used by other users, you can delete it.",
+                                "Este rol esta en uso por otros usuarios, no puedes eliminarlo.",
                         });
                     }
 
                     if (await getRol.remove()) {
                         return res.status(200).json({
                             status: false,
-                            message: "The rol was removed successfully.",
+                            message: "El rol ha sido eliminado correctamente.",
                         });
                     } else {
                         return res.status(405).json({
@@ -210,13 +210,13 @@ rolMethods.deleteRol = async (req, res) => {
                 } else {
                     return res.status(400).json({
                         status: false,
-                        message: "The rol was not found.",
+                        message: "El rol no ha sido encontrado.",
                     });
                 }
             } else {
                 return res.status(400).json({
                     status: false,
-                    message: "The rolID is required.",
+                    message: "El id del rol es requerido.",
                 });
             }
         } else {
