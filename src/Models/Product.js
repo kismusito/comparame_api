@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 const productSchema = new Schema({
     categories: [
@@ -9,7 +9,7 @@ const productSchema = new Schema({
     ],
     supermarker: {
         type: Types.ObjectId,
-        ref: "Category",
+        ref: "Supermarker",
     },
     product_name: {
         type: String,
@@ -42,4 +42,4 @@ const productSchema = new Schema({
     },
 });
 
-export default model("Supermaker", productSchema);
+export default model("Product", productSchema);
