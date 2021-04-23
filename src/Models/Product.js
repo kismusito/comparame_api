@@ -38,7 +38,7 @@ const productSchema = new Schema({
     },
     updated_at: {
         type: Date,
-        default: null,
+        default: new Date(),
     },
 });
 

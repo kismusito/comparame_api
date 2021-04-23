@@ -7,83 +7,129 @@ import Category from "../Models/Category";
 
 ProductMethods.getProductsGen = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const validateFields = EvalueFields([
-            {
-                name: "Email",
-                value: email,
-            },
-            {
-                name: "password",
-                value: password,
-            },
-        ]);
-        if (validateFields.status) {
-            const findUserEmail = await User.findOne({ email });
-            if (findUserEmail) {
-                const verifyPassword = await findUserEmail.confirmPassword(
-                    password
-                );
-                if (verifyPassword) {
-                    const token = await jwt.sign(
-                        {
-                            id: findUserEmail._id,
-                        },
-                        process.env.PRIVATE_KEY,
-                        {
-                            expiresIn: "1h",
-                        }
-                    );
-                    if (token) {
-                        const user = await User.findById(findUserEmail._id, {
-                            first_name: true,
-                            last_name: true,
-                            email: true,
-                            username: true,
-                            rol: true,
-                            profileImage: true,
-                        });
-                        return res.status(200).json({
-                            status: true,
-                            user,
-                            token,
-                            message: "Credenciales correctas.",
-                        });
-                    } else {
-                        return res.status(405).json({
+        const SupermarkerID = req.body;
+        const Products = await Product.find({}, { _id: true, supermarker: true })
+            .where("supermarker")
+            .ne(SupermarkerID);
+        if (Products) {
+            return res.status(200).json({
+                status: true,
+                data: Products,
+                message: "Se han encontrado productos de este supermercado.",
+            });
+        }
+    } catch (error) {
+        return res.status(400).json({
+            status: false,
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+        });
+    }
+}
+
+ProductMethods.getProduct = async (req, res) => {
+    try {
+        const ProductId = req.params;
+        const checkProduct = await Product.findById(ProductId);
+        if(checkProduct){
+            return res.status(200).json({
+                status: true,
+                data: checkProduct,
+                message: "Se han encontrado producto.",
+            });
+        }else{
+            return res.status(400).json({
+                status: false,
+                message: "No se han encontrado producto..",
+            });
+        }
+    } catch (error) {
+        return res.status(400).json({
+            status: false,
+            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+        });
+    }
+};
+
+ProductMethods.updateProduct = async (req, res) => {
+    try {
+        const permissions = Permission.can(req.user.rol.name).updateOwn("product").granted
+        if (permissions) {
+            const {
+                SupermarkerID,
+                ProductID,
+                categoryID,
+                product_name,
+                product_price,
+                product_status,
+                product_discount,
+                product_feautered,
+            } = req.body;
+            
+            if (SupermarkerID) {
+                if (ProductID) {                    
+                    const checkSupermarker = await Supermarker.findById(SupermarkerID);
+                    const checkProduct = await Product.findById(ProductId);
+                    if (checkSupermarker == checkProduct.supermarker) {
+                        
+                    }else{
+                        return res.status(400).json({
                             status: false,
-                            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+                            message: "Este producto no pertenece a dicho supermercado",
+                        });
+                    }
+
+
+
+                    if (checkProduct) {
+                        const CheckCategories = await Category.findById(categoryID)
+                        if (
+                            await getRol.updateOne({
+                                rolName: rol_name,
+                            })
+                        ) {
+                            return res.status(201).json({
+                                status: false,
+                                message: "El rol ha sido actualizado correctamente.",
+                            });
+                        } else {
+                            return res.status(405).json({
+                                status: false,
+                                message:
+                                    "Ha ocurrido un error, por favor intentalo nuevamente.",
+                            });
+                        }    
+                    } else {
+                        return res.status(400).json({
+                            status: false,
+                            message: "El nombre del rol no esta permitido.",
                         });
                     }
                 } else {
                     return res.status(400).json({
                         status: false,
-                        message: "El email o la contraseña son incorrectas.",
+                        message: "El nombre del rol es requerido.",
                     });
                 }
             } else {
                 return res.status(400).json({
                     status: false,
-                    message: "El email o la contraseña son incorrectas.",
+                    message: "El id rel rol es requerido.",
                 });
             }
         } else {
             return res.status(400).json({
                 status: false,
-                errors: validateFields.errors,
-                message: "Los siguientes campos contienen errores.",
+                message: "No tienes permiso para acceder a este recurso.",
             });
         }
-    } catch (error) {
-        console.log(error);
+    }catch(error) {
         return res.status(405).json({
             status: false,
             message: "Ha ocurrido un error, por favor intentalo nuevamente.",
         });
     }
 };
-ProductMethods.getProduct = async (req, res) => {};
-ProductMethods.updateProduct = async (req, res) => {};
+
 ProductMethods.deleteProduct = async (req, res) => {};
 
 ProductMethods.createProduct = async (req, res) => {
