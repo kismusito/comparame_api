@@ -11,8 +11,7 @@ import Plan from "../Models/Plan";
  * @param {*} res
  */
 planMethods.getPlans = async (req, res) => {
-    const permission = Permission.can(req.user.rol.name).readAny("plan")
-        .granted;
+    const permission = Permission.can(req.userRol).readAny("plan").granted;
     if (permission) {
         try {
             return res.status(200).json({
@@ -43,8 +42,7 @@ planMethods.getPlans = async (req, res) => {
  * @param {*} res
  */
 planMethods.getPlan = async (req, res) => {
-    const permission = Permission.can(req.user.rol.name).readAny("plan")
-        .granted;
+    const permission = Permission.can(req.userRol).readAny("plan").granted;
     if (permission) {
         try {
             const { planID } = req.body;
@@ -54,7 +52,7 @@ planMethods.getPlan = async (req, res) => {
                     return res.status(200).json({
                         status: true,
                         data: findPlan,
-                        message: "Planes disponibles",
+                        message: "Se ha encontrado el plan.",
                     });
                 } else {
                     return res.status(400).json({
@@ -91,8 +89,7 @@ planMethods.getPlan = async (req, res) => {
  * @param {*} res
  */
 planMethods.createPlan = async (req, res) => {
-    const permission = Permission.can(req.user.rol.name).createAny("plan")
-        .granted;
+    const permission = Permission.can(req.userRol).createAny("plan").granted;
     if (permission) {
         const {
             total_featured_products,
@@ -102,15 +99,15 @@ planMethods.createPlan = async (req, res) => {
         } = req.body;
         const validateFields = EvalueFields([
             {
-                name: "Plan price",
+                name: "Precio",
                 value: plan_price,
             },
             {
-                name: "Plan name",
+                name: "Nombre del plan",
                 value: plan_name,
             },
             {
-                name: "Duration",
+                name: "Duración",
                 value: duration,
             },
         ]);
@@ -163,9 +160,15 @@ planMethods.createPlan = async (req, res) => {
  * @param {*} res
  */
 planMethods.updatePlan = async (req, res) => {
-    const permission = Permission.can(req.user.rol.name).updateAny("plan")
-        .granted;
+    const permission = Permission.can(req.userRol).updateAny("plan").granted;
     if (permission) {
+        const {
+            planID,
+            total_featured_products,
+            plan_price,
+            plan_name,
+            duration,
+        } = req.body;
     } else {
         return res.status(400).json({
             status: false,
@@ -182,9 +185,9 @@ planMethods.updatePlan = async (req, res) => {
  * @param {*} res
  */
 planMethods.deletePlan = async (req, res) => {
-    const permission = Permission.can(req.user.rol.name).deleteAny("plan")
-        .granted;
+    const permission = Permission.can(req.userRol).deleteAny("plan").granted;
     if (permission) {
+        const {planID} = req.body
     } else {
         return res.status(400).json({
             status: false,

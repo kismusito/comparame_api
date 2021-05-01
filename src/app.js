@@ -8,6 +8,7 @@ import {
     RolRoutes,
     ProfileRoutes,
     ProductRoutes,
+    SupermarkerRoutes,
 } from "./routes";
 
 // Use only in development mode.
@@ -37,5 +38,6 @@ app.use("/user", UserRoute);
 app.use("/profile", ProfileRoutes);
 app.use("/rol", RolRoutes);
 app.use("/product", ProductRoutes);
+app.use("/supermarker", SupermarkerRoutes);
 
 export default app;
