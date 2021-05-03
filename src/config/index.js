@@ -1,7 +1,7 @@
-export const allowedRols = ["admin", "supermaker", "client"];
+export const allowedRols = ["admin", "supermarket", "client"];
 
 export const rolsFrontEndName = {
     admin: "Administrador",
-    supermaker: "Supermercado",
+    supermarket: "Supermercado",
     client: "Cliente",
 };

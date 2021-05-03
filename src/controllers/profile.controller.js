@@ -15,6 +15,7 @@ profileMethods.getUserProfile = async (req, res) => {
     const permission = AccessControl.can(req.userRol).readOwn("profile")
         .granted;
     if (permission) {
+        console.log(req.user)
         return res.status(200).json({
             status: true,
             data: req.user,
@@ -68,7 +69,7 @@ profileMethods.updateProfile = async (req, res) => {
                             const verifyEmail = await checkEmail(email);
                             if (verifyEmail) {
                                 if (req.file) {
-                                    fs.unlinkSync(req.file);
+                                    fs.unlinkSync(req.file.path);
                                 }
                                 return res.status(400).json({
                                     status: false,
@@ -84,7 +85,7 @@ profileMethods.updateProfile = async (req, res) => {
                             );
                             if (verifyUsername) {
                                 if (req.file) {
-                                    fs.unlinkSync(req.file);
+                                    fs.unlinkSync(req.file.path);
                                 }
                                 return res.status(400).json({
                                     status: false,
@@ -135,7 +136,7 @@ profileMethods.updateProfile = async (req, res) => {
                     }
                 } else {
                     if (req.file) {
-                        fs.unlinkSync(req.file);
+                        fs.unlinkSync(req.file.path);
                     }
                     return res.status(400).json({
                         status: false,
@@ -152,7 +153,7 @@ profileMethods.updateProfile = async (req, res) => {
             }
         } catch (error) {
             if (req.file) {
-                fs.unlinkSync(req.file);
+                fs.unlinkSync(req.file.path);
             }
             return res.status(405).json({
                 status: false,

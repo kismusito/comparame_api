@@ -27,3 +27,11 @@ export const EvalueFields = (fields) => {
         status: true,
     };
 };
+
+export const convertToJson = (jsonString) => {
+    try {
+        return JSON.parse(jsonString);
+    } catch (e) {
+        return false;
+    }
+};

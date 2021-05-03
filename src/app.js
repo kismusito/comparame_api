@@ -8,7 +8,7 @@ import {
     RolRoutes,
     ProfileRoutes,
     ProductRoutes,
-    SupermarkerRoutes,
+    SupermarketRoutes,
 } from "./routes";
 
 // Use only in development mode.
@@ -38,6 +38,6 @@ app.use("/user", UserRoute);
 app.use("/profile", ProfileRoutes);
 app.use("/rol", RolRoutes);
 app.use("/product", ProductRoutes);
-app.use("/supermarker", SupermarkerRoutes);
+app.use("/supermarket", SupermarketRoutes);
 
 export default app;

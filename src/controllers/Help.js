@@ -2,18 +2,18 @@ const ProductMethods = {};
 import Permission from "../Middlewares/AccessControl";
 import { EvalueFields } from "../helpers";
 import Product from "../Models/Product";
-import Supermarker from "../Models/Supermaker";
+import Supermarket from "../Models/Supermarket";
 import Category from "../Models/Category";
 
 ProductMethods.getProductsGen = async (req, res) => {
     try {
-        const {SupermarkerID} = req.body;
+        const {SupermarketID} = req.body;
         const Products = await Product.find(
             {},
-            { _id: true, supermarker: true }
+            { _id: true, supermarket: true }
         )
-            .where("supermarker")
-            .ne(SupermarkerID);
+            .where("supermarket")
+            .ne(SupermarketID);
         if (Products) {
             return res.status(200).json({
                 status: true,
@@ -60,7 +60,7 @@ ProductMethods.updateProduct = async (req, res) => {
         ).granted;
         if (permissions) {
             const {
-                SupermarkerID,
+                SupermarketID,
                 ProductID,
                 categoryID,
                 product_name,
@@ -70,21 +70,21 @@ ProductMethods.updateProduct = async (req, res) => {
                 product_feautered,
             } = req.body;
 
-            if (SupermarkerID) {
+            if (SupermarketID) {
                 if (ProductID) {
-                    const checkSupermarker = await Supermarker.findById(
-                        SupermarkerID
+                    const checkSupermarket = await Supermarket.findById(
+                        SupermarketID
                     );
                     const checkProduct = await Product.findById(ProductId);
-                    if (checkSupermarker._id == checkProduct.supermarker) {
+                    if (checkSupermarket._id == checkProduct.supermarket) {
                         const checkNewCategory = await Category.findById(
                             categoryID
                         );
                         if (checkNewCategory) {
                             const checkProductName = await Product.find({
                                 product_name: product_name,
-                                supermarker: Supermarker.findById(
-                                    supermarkerID
+                                supermarket: Supermarket.findById(
+                                    supermarketID
                                 ),
                             });
                             if (checkProductName) {
@@ -221,7 +221,7 @@ ProductMethods.createProduct = async (req, res) => {
         ).granted;
         if (permission) {
             const {
-                supermarkerID,
+                supermarketID,
                 CategoryID,
                 product_name,
                 product_price,
@@ -252,15 +252,15 @@ ProductMethods.createProduct = async (req, res) => {
                 },
             ]);
             if (validateFields.status) {
-                const checkSupermarker = await Supermarker.findById(
-                    supermarkerID
+                const checkSupermarket = await Supermarket.findById(
+                    supermarketID
                 );
-                if (checkSupermarker) {
+                if (checkSupermarket) {
                     const checkCategory = await Category.findById(CategoryID);
                     if (checkCategory) {
                         const checkProductName = await Product.find({
                             product_name: product_name,
-                            supermarker: Supermarker.findById(supermarkerID),
+                            supermarket: Supermarket.findById(supermarketID),
                         });
                         if (checkProductName) {
                             return res.status(400).json({
@@ -271,7 +271,7 @@ ProductMethods.createProduct = async (req, res) => {
                         }
                         const product = new Product({
                             categories: CategoryID,
-                            supermarker: supermarkerID,
+                            supermarket: supermarketID,
                             product_name,
                             product_price,
                             product_status,

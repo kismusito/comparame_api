@@ -2,6 +2,8 @@ import { EvalueFields } from "../helpers";
 import jwt from "jsonwebtoken";
 import User from "../Models/User";
 import Rol from "../Models/Rol";
+import Supermarket from "../Models/Supermarket";
+import fs from "fs";
 
 const userMethods = {};
 
@@ -38,7 +40,7 @@ userMethods.login = async (req, res) => {
                         },
                         process.env.PRIVATE_KEY,
                         {
-                            expiresIn: "1h",
+                            expiresIn: "12h",
                         }
                     );
                     if (token) {
@@ -59,7 +61,8 @@ userMethods.login = async (req, res) => {
                     } else {
                         return res.status(405).json({
                             status: false,
-                            message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+                            message:
+                                "Ha ocurrido un error, por favor intentalo nuevamente.",
                         });
                     }
                 } else {
@@ -82,7 +85,6 @@ userMethods.login = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error);
         return res.status(405).json({
             status: false,
             message: "Ha ocurrido un error, por favor intentalo nuevamente.",
@@ -166,7 +168,8 @@ userMethods.register = async (req, res) => {
                 } else {
                     return res.status(405).json({
                         status: false,
-                        message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+                        message:
+                            "Ha ocurrido un error, por favor intentalo nuevamente.",
                     });
                 }
             } else {
@@ -230,10 +233,133 @@ userMethods.authenticate = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error)
         return res.status(405).json({
             status: false,
             message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+        });
+    }
+};
+
+/**
+ * Author: Juan Araque
+ * Last modified: 02/05/2021
+ *
+ * @param {*} req
+ * @param {*} res
+ */
+userMethods.upgradeToSupermarker = async (req, res) => {
+    const permission = AccessControl.can(req.userRol).createOwn("supermarket")
+        .granted;
+    if (permission) {
+        try {
+            const { supermarketName } = req.body;
+            const validateFields = EvalueFields([
+                {
+                    name: "Nombre del supermercado",
+                    value: supermarketName,
+                },
+            ]);
+            if (validateFields.status) {
+                if (req.userRol === "client") {
+                    const getSuperMarketRol = await Rol.findOne()
+                        .where("rolName")
+                        .equals("supermarket");
+                    if (getSuperMarketRol) {
+                        const updateUserRol = await User.findById(
+                            req.user._id
+                        ).updateOne({
+                            rol: getSuperMarketRol._id,
+                        });
+                        if (updateUserRol) {
+                            const supermarket = new Supermarket({
+                                userID: req.user._id,
+                                supermarketName,
+                            });
+
+                            if (req.file) {
+                                supermarket.supermarketLogo = {
+                                    path: "/assets/uploads/supermarket/",
+                                    name: req.file.filename,
+                                };
+                            }
+
+                            if (await supermarket.save()) {
+                                return res.status(200).json({
+                                    status: true,
+                                    message:
+                                        "El cliente ha sido actualizado a supermercado correctamente",
+                                });
+                            } else {
+                                await User.findById(req.user._id).updateOne({
+                                    rol: req.user.rol._id,
+                                });
+
+                                if (req.file) {
+                                    fs.unlinkSync(req.file.path);
+                                }
+
+                                return res.status(400).json({
+                                    status: true,
+                                    message:
+                                        "Ha ocurrido un error, por favor intentalo nuevamente.",
+                                });
+                            }
+                        } else {
+                            await User.findById(req.user._id).updateOne({
+                                rol: req.user.rol._id,
+                            });
+                            if (req.file) {
+                                fs.unlinkSync(req.file.path);
+                            }
+                            return res.status(400).json({
+                                status: false,
+                                message:
+                                    "Ha ocurrido un error, por favor intentalo nuevamente.",
+                            });
+                        }
+                    } else {
+                        if (req.file) {
+                            fs.unlinkSync(req.file.path);
+                        }
+                        return res.status(400).json({
+                            status: false,
+                            message: "El rol de supermercado no existe.",
+                        });
+                    }
+                } else {
+                    if (req.file) {
+                        fs.unlinkSync(req.file.path);
+                    }
+                    return res.status(400).json({
+                        status: false,
+                        message:
+                            "El usuario debe ser un cliente para cambiar a supermercado.",
+                    });
+                }
+            } else {
+                if (req.file) {
+                    fs.unlinkSync(req.file.path);
+                }
+                return res.status(400).json({
+                    status: false,
+                    errors: validateFields.errors,
+                    message: "Los siguientes campos contienen errores.",
+                });
+            }
+        } catch (error) {
+            if (req.file) {
+                fs.unlinkSync(req.file.path);
+            }
+            return res.status(405).json({
+                status: false,
+                message:
+                    "Ha ocurrido un error, por favor intentalo nuevamente.",
+            });
+        }
+    } else {
+        return res.status(400).json({
+            status: false,
+            message: "No tienes permiso para acceder a este recurso.",
         });
     }
 };

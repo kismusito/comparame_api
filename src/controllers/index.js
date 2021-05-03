@@ -3,4 +3,4 @@ export * from "./user.controller";
 export * from "./rol.controller";
 export * from "./profile.controller";
 export * from "./product.controller";
-export * from "./supermarker.controller";
+export * from "./supermarket.controller";

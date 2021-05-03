@@ -7,9 +7,9 @@ const productSchema = new Schema({
             ref: "Category",
         },
     ],
-    supermarker: {
+    supermarket: {
         type: Types.ObjectId,
-        ref: "Supermarker",
+        ref: "Supermarket",
     },
     product_name: {
         type: String,
