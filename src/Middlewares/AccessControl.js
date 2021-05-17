@@ -1,7 +1,12 @@
 import AccessControl from "accesscontrol";
 const ac = new AccessControl();
 
-ac.grant("client").readAny("product").createOwn("supermarket");
+ac.grant("client")
+    .readAny("product")
+    .createOwn("supermarket")
+    .readOwn("favoriteProduct")
+    .createOwn("favoriteProduct")
+    .deleteOwn("favoriteProduct");
 
 ac.grant("client").readOwn("profile").updateOwn("profile");
 

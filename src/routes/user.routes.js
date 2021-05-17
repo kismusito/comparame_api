@@ -5,6 +5,7 @@ const router = express.Router();
 
 router
     .get("/authenticate", UserController.authenticate)
+    .get("/favoriteProducts", AuthMiddleware, UserController.getFavoriteProduct)
     .post("/login", UserController.login)
     .post(
         "/upgradeToSupermarker",
@@ -12,6 +13,16 @@ router
         Upload("supermarket").single("supermarketLogo"),
         UserController.upgradeToSupermarker
     )
-    .post("/register", UserController.register);
+    .post(
+        "/favoriteProducts",
+        AuthMiddleware,
+        UserController.addFavoriteProduct
+    )
+    .post("/register", UserController.register)
+    .delete(
+        "/favoriteProducts",
+        AuthMiddleware,
+        UserController.removeFavoriteProduct
+    );
 
 export { router as UserRoute };
