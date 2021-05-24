@@ -742,4 +742,47 @@ supermarketMethods.deleteSupermarketHeadsquare = async (req, res) => {
     }
 };
 
+supermarketMethods.buyPlan = async (req, res) => {
+    const permission = AccessControl.can(req.userRol).updateOwn("supermarket")
+    .granted;
+    if (permission) {
+        try {            
+            const {
+                supermarketID,
+                planID
+            } = req.body;
+            if (supermarketID) {
+                const supermarket = await Supermarket.findById(supermarketID);
+                /*
+                Verificar si tiene un plan anterior{
+                    Pedir confirmacion de cambio de Plan{
+                        Mirar si los productos destacados que ya posee
+                        el supermercado son menos que el numero Maximo
+                        del nuevo plan{
+                            Hacer el Update al nuevo plan
+                            Pedir que seleccione los nuevos productos a destacar
+                        }si no{                        
+                            Return: No puede porque sobrepasa el # de productos destacados
+
+                            o
+
+                            Cambiar todos los productos destacados a no destacados
+                            Hacer el Update al nuevo plan
+                            Pedir que seleccione los nuevos productos a destacar
+                            
+                        }
+                    }        
+                }
+                */
+            }
+        } catch (error) {
+            return res.status(405).json({
+                status: false,
+                message:
+                    "Ha ocurrido un error, por favor intentalo nuevamente.",
+            });
+        }
+    }
+}
+
 export { supermarketMethods as SupermarketController };

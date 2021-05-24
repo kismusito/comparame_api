@@ -75,21 +75,37 @@ ProductMethods.updateProduct = async (req, res) => {
             if (SupermarketID) {
                 if (ProductID) {
                     const checkSupermarket = await Supermarket.findById(SupermarketID);
-                    const checkProduct = await Product.findById(ProductId);
+                    const checkProduct = await Product.findById(ProductID);
                     if (checkSupermarket._id == checkProduct.supermarket) {
                         const checkNewCategory = await Category.findById(categoryID);
                         if (checkNewCategory) {
-                            const checkProductName = await Product.find({
-                                product_name: product_name,
-                                supermarket: Supermarket.findById(SupermarketID)
-                            });
-                            if (checkProductName) {
-                                return res.status(400).json({
-                                    status: false,
-                                    message:
-                                        "El Nombre del producto ya esta en uso.",
+                            if(product_name != checkProduct.product_name){
+                                const checkProductName = await Product.find({
+                                    product_name: product_name,
+                                    supermarket: SupermarketID
                                 });
+                                if (checkProductName) {
+                                    return res.status(400).json({
+                                        status: false,
+                                        message:
+                                            "El Nombre del producto ya esta en uso.",
+                                    });
+                                }
                             }
+                            if(product_feautered != checkProduct.product_feautered){
+                                if(product_feautered == true){                            
+                                    const SupermarketPlanFeatured = checkSupermarket.plans.plan_total_featured_projects;
+                                    const SupermarketFeaturedProducts = Product.count({ supermarket: SupermarketID, product_feautered: true });
+                                    if(SupermarketPlanFeatured <= SupermarketFeaturedProducts){
+                                        return res.status(400).json({
+                                            status: false,
+                                            message:
+                                                "El Producto no puede ser destacado, no tiene plazas libres dentro de su plan.",
+                                        });
+                                    }
+                                }
+                            }
+                            
                             const newProduct = await checkProduct.updateOne({
                                 categories: categoryID,
                                 product_name: product_name,
@@ -97,6 +113,7 @@ ProductMethods.updateProduct = async (req, res) => {
                                 product_status: product_status,
                                 product_discount: product_discount,
                                 product_feautered: product_feautered,
+                                updated_at: new Date(),
                             });
                             if (newProduct) {
                                 return res.status(201).json({
@@ -216,7 +233,7 @@ ProductMethods.createProduct = async (req, res) => {
         const permission = Permission.can(req.user.rol.name).createOwn(
             "product"
         ).granted;
-        if (permission) {
+        if (permission) {            
             const {
                 supermarketID,
                 CategoryID,
@@ -263,6 +280,17 @@ ProductMethods.createProduct = async (req, res) => {
                                     "El Nombre del producto ya esta en uso.",
                             });
                         }
+                        if(product_feautered == true){                            
+                            const SupermarketPlanFeatured = checkSupermarket.plans.plan_total_featured_projects;
+                            const SupermarketFeaturedProducts = await Product.count({ supermarket: SupermarketID, product_feautered: true });
+                            if(SupermarketPlanFeatured <= SupermarketFeaturedProducts){
+                                return res.status(400).json({
+                                    status: false,
+                                    message:
+                                        "El Producto no puede ser destacado, no tiene plazas libres dentro de su plan.",
+                                });
+                            }
+                        }
                         const product = new Product({
                             categories: CategoryID,
                             supermarket: supermarketID,
@@ -271,6 +299,7 @@ ProductMethods.createProduct = async (req, res) => {
                             product_status,
                             product_discount,
                             product_feautered,
+                            created_at: new Date(),
                         });
                         if (await product.save()) {
                             return res.status(201).json({

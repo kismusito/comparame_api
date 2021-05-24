@@ -8,6 +8,10 @@ const supermarketSchema = new Schema({
         type: Types.ObjectId,
         ref: "User",
     },
+    plans: {
+        type: Types.ObjectId,
+        ref: "Plan",
+    },
     supermarketLogo: {
         path: String,
         name: String,
