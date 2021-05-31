@@ -131,7 +131,7 @@ planMethods.createPlan = async (req, res) => {
                 }
 
                 const plan = new Plan({
-                    total_featured_products,
+                    plan_total_featured_projects: total_featured_products,
                     plan_price,
                     plan_name,
                     duration,
@@ -180,20 +180,23 @@ planMethods.updatePlan = async (req, res) => {
             if (PlanId) {
                 const checkPlan = await Plan.findById(PlanId);
                 if (checkPlan) {
-                    const checkPlanName = await Plan.find({
-                        plan_name: plan_name
-                    });
-                    if (checkPlanName != checkPlan) {
-                        return res.status(400).json({
-                            status: false,
-                            message: "El Nombre del plan ya esta en uso.",
+                    if(checkPlan.plan_name != plan_name){
+                        const checkPlanName = await Plan.find({
+                            plan_name: plan_name
                         });
-                    }
+                        if (checkPlanName) {
+                            return res.status(400).json({
+                                status: false,
+                                message: "El Nombre del plan ya esta en uso.",
+                            });
+                        }
+                    }                    
+                    
                     const newPlan = await checkPlan.updateOne({
-                        plan_total_featured_projects: plan_total_featured_projects,
-                        plan_price: plan_price,
-                        plan_name: plan_name,
-                        duration: duration
+                        plan_total_featured_projects,
+                        plan_price,
+                        plan_name,
+                        duration
                     });
                     if (newPlan) {
                         return res.status(201).json({

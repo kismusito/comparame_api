@@ -76,7 +76,7 @@ ProductMethods.updateProduct = async (req, res) => {
                 if (ProductID) {
                     const checkSupermarket = await Supermarket.findById(SupermarketID);
                     const checkProduct = await Product.findById(ProductID);
-                    if (checkSupermarket._id == checkProduct.supermarket) {
+                    if (SupermarketID == checkProduct.supermarket) {
                         const checkNewCategory = await Category.findById(categoryID);
                         if (checkNewCategory) {
                             if(product_name != checkProduct.product_name){
@@ -94,9 +94,10 @@ ProductMethods.updateProduct = async (req, res) => {
                             }
                             if(product_feautered != checkProduct.product_feautered){
                                 if(product_feautered == true){                            
-                                    const SupermarketPlanFeatured = checkSupermarket.plans.plan_total_featured_projects;
+                                    const IDSuperPlan = checkSupermarket.plans;
+                                    const PlanSupermarket =  await Plan.findById(IDSuperPlan);
                                     const SupermarketFeaturedProducts = Product.count({ supermarket: SupermarketID, product_feautered: true });
-                                    if(SupermarketPlanFeatured <= SupermarketFeaturedProducts){
+                                    if(PlanSupermarket.plan_total_featured_projects <= SupermarketFeaturedProducts){
                                         return res.status(400).json({
                                             status: false,
                                             message:
@@ -271,7 +272,7 @@ ProductMethods.createProduct = async (req, res) => {
                     if (checkCategory) {
                         const checkProductName = await Product.find({
                             product_name: product_name,
-                            supermarket: Supermarket.findById(supermarketID)
+                            supermarket: checkSupermarket
                         });
                         if (checkProductName) {
                             return res.status(400).json({
@@ -281,9 +282,10 @@ ProductMethods.createProduct = async (req, res) => {
                             });
                         }
                         if(product_feautered == true){                            
-                            const SupermarketPlanFeatured = checkSupermarket.plans.plan_total_featured_projects;
-                            const SupermarketFeaturedProducts = await Product.count({ supermarket: SupermarketID, product_feautered: true });
-                            if(SupermarketPlanFeatured <= SupermarketFeaturedProducts){
+                            const IDSuperPlan = checkSupermarket.plans;
+                            const PlanSupermarket =  await Plan.findById(IDSuperPlan);
+                            const SupermarketFeaturedProducts = Product.count({ supermarket: supermarketID, product_feautered: true });
+                            if(PlanSupermarket.plan_total_featured_projects <= SupermarketFeaturedProducts){
                                 return res.status(400).json({
                                     status: false,
                                     message:
