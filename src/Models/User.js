@@ -7,10 +7,6 @@ const userSchema = new Schema({
         ref: "Rol",
         required: true,
     },
-    plans: {
-        type: Types.ObjectId,
-        ref: "Plan",
-    },
     username: {
         type: String,
         required: true,

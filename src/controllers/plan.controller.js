@@ -4,6 +4,7 @@ import {
     EvalueFields
 } from "../helpers";
 import Plan from "../Models/Plan";
+import Supermarket from "../Models/Supermarket";
 
 /**
  * Author: Juan Araque
@@ -99,7 +100,12 @@ planMethods.createPlan = async (req, res) => {
             plan_name,
             duration,
         } = req.body;
-        const validateFields = EvalueFields([{
+        const validateFields = EvalueFields([
+            {
+                name: "Productos destacados",
+                value: total_featured_products,
+            },
+            {
                 name: "Plan price",
                 value: plan_price,
             },
@@ -125,14 +131,11 @@ planMethods.createPlan = async (req, res) => {
                 }
 
                 const plan = new Plan({
+                    plan_total_featured_projects: total_featured_products,
                     plan_price,
                     plan_name,
                     duration,
                 });
-
-                if (total_featured_products) {
-                    plan.plan_total_featured_projects = total_featured_products;
-                }
 
                 if (await plan.save()) {
                     return res.status(201).json({
@@ -177,20 +180,23 @@ planMethods.updatePlan = async (req, res) => {
             if (PlanId) {
                 const checkPlan = await Plan.findById(PlanId);
                 if (checkPlan) {
-                    const checkPlanName = await Plan.find({
-                        plan_name: plan_name
-                    });
-                    if (checkPlanName != checkPlan) {
-                        return res.status(400).json({
-                            status: false,
-                            message: "El Nombre del plan ya esta en uso.",
+                    if(checkPlan.plan_name != plan_name){
+                        const checkPlanName = await Plan.find({
+                            plan_name: plan_name
                         });
-                    }
+                        if (checkPlanName) {
+                            return res.status(400).json({
+                                status: false,
+                                message: "El Nombre del plan ya esta en uso.",
+                            });
+                        }
+                    }                    
+                    
                     const newPlan = await checkPlan.updateOne({
-                        plan_total_featured_projects: plan_total_featured_projects,
-                        plan_price: plan_price,
-                        plan_name: plan_name,
-                        duration: duration
+                        plan_total_featured_projects,
+                        plan_price,
+                        plan_name,
+                        duration
                     });
                     if (newPlan) {
                         return res.status(201).json({
@@ -246,7 +252,7 @@ planMethods.deletePlan = async (req, res) => {
             if (PlanId) {
                 const getPlan = await Plan.findById(PlanId);
                 if (getPlan) {
-                    const checkPlanInUser = await User.find({
+                    const checkPlanInUser = await Supermarket.find({
                         plans: PlanId
                     }, {
                         _id: true
@@ -254,7 +260,7 @@ planMethods.deletePlan = async (req, res) => {
                     if (checkPlanInUser.length > 0) {
                         return res.status(400).json({
                             status: false,
-                            message: "Este Plan actualmente esta en uso por uno o mas usuarios, no puedes eliminarlo.",
+                            message: "Este Plan actualmente esta en uso por uno o mas supermercados, no puedes eliminarlo.",
                         });
                     }
                     if (await getPlan.remove()) {

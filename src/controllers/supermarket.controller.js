@@ -4,6 +4,7 @@ import Supermarket from "../Models/Supermarket";
 import { Types } from "mongoose";
 const supermarketMethods = {};
 import fs from "fs";
+import Plan from "../Models/Plan";
 
 /**
  * Author: Juan Araque
@@ -741,5 +742,70 @@ supermarketMethods.deleteSupermarketHeadsquare = async (req, res) => {
         });
     }
 };
+
+supermarketMethods.buyPlan = async (req, res) => {
+    const permission = AccessControl.can(req.userRol).updateOwn("supermarket")
+    .granted;
+    if (permission) {
+        try {            
+            const {
+                supermarketID,
+                planID
+            } = req.body;
+            if (supermarketID) {
+                const plan = await Plan.findById(planID);
+                const supermarket = await Supermarket.findById(supermarketID);
+                if(supermarket.plans != planID){
+                    //Pedir confirmacion cambio de plan. ( de ser asi continuar con lo de abajo)
+                    const cantProductsFeatured = Product.count({ supermarket: supermarketID, product_feautered: true });
+                    const cantMaxPlan = plan.plan_total_featured_projects;
+                    if(cantProductsFeatured > cantMaxPlan){
+                        return res.status(400).json({
+                            status: false,
+                            message: "No puede comprar este plan. Los productos destacados actuales sobrepasan el numero maximo admitido por el plan que desea comprar",
+                        }); 
+                    }
+                    const UptadedPlan = await supermarket.updateOne({
+                        plans : planID,
+                        updated_at: new Date(),
+                    })
+                    if (UptadedPlan) {
+                        //mandarlo a seleccionar nuevos productos destacados
+                        return res.status(201).json({
+                            status: true,
+                            message:
+                                "El Plan ha sido comprado correctamente.",
+                        });
+                    } else {
+                        return res.status(405).json({
+                            status: false,
+                            message: "Ha ocurrido un error, por favor intentelo nuevamente.",
+                        });
+                    }
+                }else{
+                    /*
+                    Decirle al cliente que ya tiene comprado y activo dicho plan
+                    No se si optar por:
+                        1. Directamente negarle la compra hasta que se le
+                         acabe la duracion del plan actual que tiene.
+                        2. de alguna forma dejar que el cliente compre el plan,
+                        y que cuando se le acabe la duracion del que tiene activo
+                        se le active directamente el que acaba de comprar.                    
+                    */
+                    return res.status(400).json({
+                        status: false,
+                        message: "No puede comprar este plan.",
+                    }); 
+                }
+            }
+        } catch (error) {
+            return res.status(405).json({
+                status: false,
+                message:
+                    "Ha ocurrido un error, por favor intentalo nuevamente.",
+            });
+        }
+    }
+}
 
 export { supermarketMethods as SupermarketController };
