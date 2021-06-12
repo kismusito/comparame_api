@@ -1,12 +1,13 @@
 import express from "express";
 import { ProductController } from "../controllers/product.controller";
+import { AuthMiddleware } from "../Middlewares";
 const router = express.Router();
 
 router
-    .get("/", ProductController.getProductsGen)
-    .get("/{id}", ProductController.getProduct)
-    .post("/", ProductController.createProduct)
-    .put("/", ProductController.updateProduct)
-    .delete("/", ProductController.deleteProduct);
+  .get("/", ProductController.getProducts)
+  .get("/:id", ProductController.getProduct)
+  .post("/", AuthMiddleware, ProductController.createProduct)
+  .put("/", AuthMiddleware, ProductController.updateProduct)
+  .delete("/", AuthMiddleware, ProductController.deleteProduct);
 
 export { router as ProductRoutes };
