@@ -1,6 +1,6 @@
 const ProductMethods = {};
 import Permission from "../Middlewares/AccessControl";
-import { EvalueFields } from "../Helpers";
+import { EvalueFields } from "../helpers";
 import Product from "../Models/Product";
 import Supermarket from "../Models/Supermarket";
 import Category from "../Models/Category";
