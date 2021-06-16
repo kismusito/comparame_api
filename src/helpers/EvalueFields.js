@@ -1,37 +1,37 @@
 export const EvalueFields = (fields) => {
-    let errors = [];
-    fields.forEach((field) => {
-        if (field["value"]) {
-            switch (typeof field["value"]) {
-                case "string":
-                    if (field["value"].length < 1) {
-                        errors.push(field["name"]);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        } else {
+  let errors = [];
+  fields.forEach((field) => {
+    if (field["value"]) {
+      switch (typeof field["value"]) {
+        case "string":
+          if (field["value"].length < 1 && typeof field["value"] !== "number") {
             errors.push(field["name"]);
-        }
-    });
-
-    if (errors.length > 0) {
-        return {
-            status: false,
-            errors,
-        };
+          }
+          break;
+        default:
+          break;
+      }
+    } else {
+      errors.push(field["name"]);
     }
+  });
 
+  if (errors.length > 0) {
     return {
-        status: true,
+      status: false,
+      errors,
     };
+  }
+
+  return {
+    status: true,
+  };
 };
 
 export const convertToJson = (jsonString) => {
-    try {
-        return JSON.parse(jsonString);
-    } catch (e) {
-        return false;
-    }
+  try {
+    return JSON.parse(jsonString);
+  } catch (e) {
+    return false;
+  }
 };
