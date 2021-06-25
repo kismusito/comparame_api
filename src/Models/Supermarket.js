@@ -8,10 +8,16 @@ const supermarketSchema = new Schema({
         type: Types.ObjectId,
         ref: "User",
     },
-    plans: {
-        type: Types.ObjectId,
-        ref: "Plan",
-    },
+    plans: [{
+        plan: {
+            type: Types.ObjectId,
+            ref: "plans"
+        },
+        start_date:{
+            type: String
+        } 
+    }],
+
     supermarketLogo: {
         path: String,
         name: String,

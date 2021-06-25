@@ -61,6 +61,7 @@ ProductMethods.updateProduct = async (req, res) => {
         productID,
         product_name,
         product_price,
+        //"product_status" Falta meter para cambiar el estado del producto.
         product_discount,
       } = req.body;
 
@@ -130,6 +131,181 @@ ProductMethods.updateProduct = async (req, res) => {
     });
   }
 };
+
+ProductMethods.TakeAwayProductCategory = async (req, res) => {
+  try {
+    const permissions = Permission.can(req.userRol).updateOwn("product").granted;
+    if(permissions){
+      const {
+        CategoryID,
+        ProductID
+      } = req.body;
+      if(CategoryID){
+        if(ProductID){
+          const getProduct = await Product.findById(ProductID);
+          const getCategory = await Category.findById(CategoryID);
+          if(getProduct){
+            if(getCategory){
+              const checkCategoryProduct = await Category.find(
+                {_id:CategoryID, products: ProductID},
+                {_id: true});
+              if(checkCategoryProduct){
+                //Quitar la categoria del producto, Pero manteniendo las demas categorias del producto
+                const TakeAwayCategory = await getProduct.updateOne({
+                  categories: null,
+                  updated_at: new Date(),
+                });
+                if(!TakeAwayCategory){
+                  return res.status(400).json({
+                    status: false,
+                    message:
+                      "no se pudo actualizar el cambio de categoria en el producto",
+                  });
+                }
+                //Quitar el producto de la categoria, Pero manteniendo los demas productos de la categoria
+                const TakeAwayProduct = await getCategory.updateOne({
+                  products: null,
+                  updated_at: new Date(),
+                });
+                if(!TakeAwayProduct){
+                  return res.status(400).json({
+                    status: false,
+                    message:
+                      "no se pudo actualizar el cambio de producto en la categoria, pero se realizo el cambio en el producto",
+                  });
+                }
+                return res.status(200).json({
+                  status: true,
+                  message:
+                    "Se actualizo el producto y la categoria",
+                });
+              }
+              return res.status(400).json({
+                status: false,
+                message:
+                  "El producto no pertenece a dicha categoria",
+              });
+            }
+            return res.status(400).json({
+              status: false,
+              message:
+                "No se encontro la categoria",
+            });
+          }
+          return res.status(400).json({
+            status: false,
+            message:
+              "No encontro producto",
+          });
+        }
+        return res.status(400).json({
+          status: false,
+          message:
+            "No se ingreso producto",
+        });
+      }
+      return res.status(400).json({
+        status: false,
+        message:
+          "permisos",
+      });
+    }
+  }catch (error) {
+    return res.status(400).json({
+      status: false,
+      message:
+        "Ha ocurrido un error, por favor intentalo nuevamente.",
+    });
+  }
+};
+
+ProductMethods.InsertProductCategory = async (req, res) => {
+  try {
+    const permissions = Permission.can(req.userRol).updateOwn("product").granted;
+    if(permissions){
+      const {
+        CategoryID,
+        ProductID
+      } = req.body;
+      if(CategoryID){
+        if(ProductID){
+          const getProduct = await Product.findById(ProductID);
+          const getCategory = await Category.findById(CategoryID);
+          if(getProduct){
+            if(getCategory){
+              const checkCategoryProduct = await Category.find(
+                {_id:CategoryID, products: ProductID},
+                {_id: true});
+              if(!checkCategoryProduct){
+                //Añadir la categoria al producto, Pero manteniendo las demas categorias del producto
+                const InsertCategory = await getProduct.updateOne({
+                  categories: CategoryID,
+                  updated_at: new Date(),
+                });
+                if(!InsertCategory){
+                  return res.status(400).json({
+                    status: false,
+                    message:
+                      "no se pudo actualizar el cambio de categoria en el producto",
+                  });
+                }
+                //Añadir el producto de la categoria, Pero manteniendo los demas productos de la categoria
+                const InsertProduct = await getCategory.updateOne({
+                  products: ProductID,
+                  updated_at: new Date(),
+                });
+                if(!InsertProduct){
+                  return res.status(400).json({
+                    status: false,
+                    message:
+                      "no se pudo actualizar el cambio de producto en la categoria, pero se realizo el cambio en el producto",
+                  });
+                }
+                return res.status(200).json({
+                  status: true,
+                  message:
+                    "Se actualizo el producto y la categoria",
+                });
+              }
+              return res.status(400).json({
+                status: false,
+                message:
+                  "El producto ya pertenece a dicha categoria",
+              });
+            }
+            return res.status(400).json({
+              status: false,
+              message:
+                "No se encontro la categoria",
+            });
+          }
+          return res.status(400).json({
+            status: false,
+            message:
+              "No encontro producto",
+          });
+        }
+        return res.status(400).json({
+          status: false,
+          message:
+            "No se ingreso producto",
+        });
+      }
+      return res.status(400).json({
+        status: false,
+        message:
+          "permisos",
+      });
+    }
+  }catch (error) {
+    return res.status(400).json({
+      status: false,
+      message:
+        "Ha ocurrido un error, por favor intentalo nuevamente.",
+    });
+  }
+};
+
 
 ProductMethods.deleteProduct = async (req, res) => {
   try {
@@ -315,5 +491,63 @@ ProductMethods.createProduct = async (req, res) => {
     });
   }
 };
+
+ProductMethods.searchProductNameSupermarket = async (req, res) => {
+  try {
+    const {
+      product_name
+    } = req.body;
+    if(product_name){
+      const checkProduct = await Product.find({product_name: product_name},{_id: true})
+      .populate("categories")
+      .populate("supermarket");
+      if(checkProduct){
+        return res.status(200).json({
+          status: true,
+          data: checkProduct,
+          message: "Se encontro este producto en este supermercado.",
+        });
+      }
+    }
+    return res.status(400).json({
+      status: false,
+      message: "No se encontro un producto por dicho nombre"
+    })
+  } catch (error) {
+    return res.status(405).json({
+      status: false,
+      message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+    });
+  }
+};
+
+ProductMethods.searchProductNameGen = async (req, res) => {
+  try {
+    const {
+      product_name
+    } = req.body;
+    if(product_name){
+      const checkProduct = await Product.find({product_name: product_name},{_id: true})
+      .populate("categories");
+      if(checkProduct){
+        return res.status(200).json({
+          status: true,
+          data: checkProduct,
+          message: "Se encontraron estos productos",
+        });
+      }
+    }
+    return res.status(400).json({
+      status: false,
+      message: "No se encontro un producto por dicho nombre"
+    })
+  } catch (error) {
+    return res.status(405).json({
+      status: false,
+      message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+    });
+  }
+};
+
 
 export { ProductMethods as ProductController };

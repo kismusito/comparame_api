@@ -766,7 +766,10 @@ supermarketMethods.buyPlan = async (req, res) => {
                         }); 
                     }
                     const UptadedPlan = await supermarket.updateOne({
-                        plans : planID,
+                        plans: [{
+                            plan : planID,
+                            start_date: new Date()
+                        }],                        
                         updated_at: new Date(),
                     })
                     if (UptadedPlan) {
