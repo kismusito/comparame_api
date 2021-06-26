@@ -6,10 +6,47 @@ import Supermarket from "../Models/Supermarket";
 import Category from "../Models/Category";
 
 ProductMethods.getProducts = async (req, res) => {
+  const { minPrice, maxPrice, name, feature } = req.query;
+  const filters = {};
+
+  if (minPrice) {
+    if (Number.isNaN(Number(minPrice))) {
+      return res.status(400).json({
+        status: false,
+        message: "El precio minimo debe ser un numero",
+      });
+    }
+    filters.product_price = {
+      ...filters.product_price,
+      $gte: minPrice,
+    };
+  }
+
+  if (maxPrice) {
+    if (Number.isNaN(Number(maxPrice))) {
+      return res.status(400).json({
+        status: false,
+        message: "El precio maximo debe ser un numero",
+      });
+    }
+    filters.product_price = {
+      ...filters.product_price,
+      $lte: Number(maxPrice),
+    };
+  }
+
+  if (name) {
+    filters.product_name = { $regex: ".*" + name + ".*", $options: "i" };
+  }
+
+  if (feature) {
+    filters.product_feautered = true;
+  }
+
   try {
-    const products = await Product.find()
-      .populate("categories")
-      .populate("supermarket");
+    const products = await Product.find({
+      ...filters,
+    }).populate("categories");
     return res.status(200).json({
       status: true,
       data: products,
