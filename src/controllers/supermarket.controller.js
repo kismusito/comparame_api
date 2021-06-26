@@ -116,7 +116,7 @@ supermarketMethods.getSupermarketProducts = async (req, res) => {
   }
 
   if (feature) {
-    filters.product_feautered = true;
+    filters.product_feautered = feature;
   }
 
   if (supermarketID) {
@@ -226,6 +226,93 @@ supermarketMethods.getSupermarketHeadsquare = async (req, res) => {
         return res.status(400).json({
           status: false,
           message: "El id de la sede es requerido.",
+        });
+      }
+    } else {
+      return res.status(400).json({
+        status: false,
+        message: "El id del supermercado es requerido.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(405).json({
+      status: false,
+      message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+    });
+  }
+};
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2 - lat1); // deg2rad below
+  var dLon = deg2rad(lon2 - lon1);
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) *
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180);
+}
+
+/**
+ * Author: Juan Araque
+ * Last modified: 25/06/2021
+ *
+ * @param {*} req
+ * @param {*} res
+ */
+supermarketMethods.getSupermarketHeadsquareByGeoLocation = async (req, res) => {
+  try {
+    const { supermarketID } = req.params;
+    const { lon, lat, distance } = req.query;
+    if (!lon && !lat && !distance) {
+      return res.status(400).json({
+        status: false,
+        message: "La longitud, latitud y distancia son requeridos.",
+      });
+    }
+    if (supermarketID) {
+      const supermarket = await Supermarket.findById(supermarketID);
+      if (supermarket) {
+        const supermarketHeadsquare = supermarket.headsquares.filter(
+          (supermarketItem) => {
+            const distanceHeadsquare = getDistanceFromLatLonInKm(
+              lon,
+              lat,
+              supermarketItem.headsquareLocation.longitude,
+              supermarketItem.headsquareLocation.latitude
+            );
+            if (distanceHeadsquare < Number(distance)) {
+              return supermarketItem;
+            }
+          }
+        );
+        if (supermarketHeadsquare) {
+          return res.status(200).json({
+            status: true,
+            data: {
+              headsquare: supermarketHeadsquare,
+            },
+            message: "Se ha encontrado la sede del supermercado.",
+          });
+        } else {
+          return res.status(400).json({
+            status: false,
+            message: "No se ha encontrado la sede del supermercado.",
+          });
+        }
+      } else {
+        return res.status(400).json({
+          status: false,
+          message: "No se ha encontrado el supermercado.",
         });
       }
     } else {

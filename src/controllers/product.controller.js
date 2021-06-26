@@ -40,7 +40,7 @@ ProductMethods.getProducts = async (req, res) => {
   }
 
   if (feature) {
-    filters.product_feautered = true;
+    filters.product_feautered = feature;
   }
 
   try {

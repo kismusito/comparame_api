@@ -12,6 +12,10 @@ router
     SupermarketController.getSupermarketHeadsquares
   )
   .get(
+    "/headsquareNear/:supermarketID",
+    SupermarketController.getSupermarketHeadsquareByGeoLocation
+  )
+  .get(
     "/headsquare/:supermarketID/:headsquareID",
     SupermarketController.getSupermarketHeadsquare
   )
