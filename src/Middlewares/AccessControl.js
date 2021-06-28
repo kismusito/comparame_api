@@ -6,7 +6,8 @@ ac.grant("client")
     .createOwn("supermarket")
     .readOwn("favoriteProduct")
     .createOwn("favoriteProduct")
-    .deleteOwn("favoriteProduct");
+    .deleteOwn("favoriteProduct")
+    .readAny("category");
 
 ac.grant("client").readOwn("profile").updateOwn("profile");
 
@@ -28,7 +29,10 @@ ac.grant("admin")
     .extend("supermarket")
     .createAny("plan")
     .updateAny("plan")
-    .deleteAny("plan");
+    .deleteAny("plan")
+    .createAny("category")
+    .deleteAny("category")
+    .updateAny("category");
 
 ac.grant("admin").createAny("rol").updateAny("rol").deleteAny("rol");
 
