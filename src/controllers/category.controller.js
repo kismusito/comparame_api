@@ -2,7 +2,7 @@ const CategoryMethods = {};
 import Permission from "../Middlewares/AccessControl";
 import {
     EvalueFields
-} from "../Helpers";
+} from "../helpers";
 import Category from "../Models/Category";
 import User from "../Models/User";
 import Product from "../Models/Product";
