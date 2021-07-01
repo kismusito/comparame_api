@@ -6,43 +6,6 @@ import Supermarket from "../Models/Supermarket";
 import Category from "../Models/Category";
 
 ProductMethods.getProducts = async (req, res) => {
-  const { minPrice, maxPrice, name, feature } = req.query;
-  const filters = {};
-
-  if (minPrice) {
-    if (Number.isNaN(Number(minPrice))) {
-      return res.status(400).json({
-        status: false,
-        message: "El precio minimo debe ser un numero",
-      });
-    }
-    filters.product_price = {
-      ...filters.product_price,
-      $gte: minPrice,
-    };
-  }
-
-  if (maxPrice) {
-    if (Number.isNaN(Number(maxPrice))) {
-      return res.status(400).json({
-        status: false,
-        message: "El precio maximo debe ser un numero",
-      });
-    }
-    filters.product_price = {
-      ...filters.product_price,
-      $lte: Number(maxPrice),
-    };
-  }
-
-  if (name) {
-    filters.product_name = { $regex: ".*" + name + ".*", $options: "i" };
-  }
-
-  if (feature) {
-    filters.product_feautered = feature;
-  }
-
   try {
     const products = await Product.find({
       ...filters,
@@ -183,15 +146,19 @@ ProductMethods.TakeAwayProductCategory = async (req, res) => {
           const getCategory = await Category.findById(CategoryID);
           if(getProduct){
             if(getCategory){
-              const checkCategoryProduct = await Category.find(
-                {_id:CategoryID, products: ProductID},
+              const checkCategoryProduct = await Product.find(
+                {_id: ProductID, categories: CategoryID},
                 {_id: true});
               if(checkCategoryProduct){
                 //Quitar la categoria del producto, Pero manteniendo las demas categorias del producto
-                const TakeAwayCategory = await getProduct.updateOne({
-                  categories: null,
-                  updated_at: new Date(),
-                });
+                const TakeAwayCategory = await getProduct.updateOne(
+                  {
+                    updated_at: new Date()
+                  },
+                  {
+                    $pull: { categories: { _id: CategoryID} } 
+                  },
+                );
                 if(!TakeAwayCategory){
                   return res.status(400).json({
                     status: false,
@@ -199,22 +166,10 @@ ProductMethods.TakeAwayProductCategory = async (req, res) => {
                       "no se pudo actualizar el cambio de categoria en el producto",
                   });
                 }
-                //Quitar el producto de la categoria, Pero manteniendo los demas productos de la categoria
-                const TakeAwayProduct = await getCategory.updateOne({
-                  products: null,
-                  updated_at: new Date(),
-                });
-                if(!TakeAwayProduct){
-                  return res.status(400).json({
-                    status: false,
-                    message:
-                      "no se pudo actualizar el cambio de producto en la categoria, pero se realizo el cambio en el producto",
-                  });
-                }
                 return res.status(200).json({
                   status: true,
                   message:
-                    "Se actualizo el producto y la categoria",
+                    "Se elimino la categoria del producto",
                 });
               }
               return res.status(400).json({
@@ -275,10 +230,14 @@ ProductMethods.InsertProductCategory = async (req, res) => {
                 {_id: true});
               if(!checkCategoryProduct){
                 //Añadir la categoria al producto, Pero manteniendo las demas categorias del producto
-                const InsertCategory = await getProduct.updateOne({
-                  categories: CategoryID,
-                  updated_at: new Date(),
-                });
+                const InsertCategory = await getProduct.updateOne(
+                  {
+                    updated_at: new Date()
+                  },
+                  {
+                    $push: { categories: { _id: CategoryID} } 
+                  },
+                  );
                 if(!InsertCategory){
                   return res.status(400).json({
                     status: false,
@@ -286,22 +245,10 @@ ProductMethods.InsertProductCategory = async (req, res) => {
                       "no se pudo actualizar el cambio de categoria en el producto",
                   });
                 }
-                //Añadir el producto de la categoria, Pero manteniendo los demas productos de la categoria
-                const InsertProduct = await getCategory.updateOne({
-                  products: ProductID,
-                  updated_at: new Date(),
-                });
-                if(!InsertProduct){
-                  return res.status(400).json({
-                    status: false,
-                    message:
-                      "no se pudo actualizar el cambio de producto en la categoria, pero se realizo el cambio en el producto",
-                  });
-                }
                 return res.status(200).json({
                   status: true,
                   message:
-                    "Se actualizo el producto y la categoria",
+                    "Se añadio la categoria al producto",
                 });
               }
               return res.status(400).json({
@@ -565,7 +512,7 @@ ProductMethods.searchProductNameGen = async (req, res) => {
     } = req.body;
     if(product_name){
       const checkProduct = await Product.find({product_name: product_name},{_id: true})
-      .populate("categories");
+      .populate("categories");     
       if(checkProduct){
         return res.status(200).json({
           status: true,

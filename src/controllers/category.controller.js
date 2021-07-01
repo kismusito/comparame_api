@@ -22,7 +22,7 @@ CategoryMethods.getCategory = async (req, res) => {
       }
       return res.status(400).json({
         status: false,
-        message: "No se han encontrado la categoria..",
+        message: "No han encontrado la categoria..",
       });
     }
   } catch (error) {
@@ -59,7 +59,7 @@ CategoryMethods.getCategories = async (req, res) => {
 };
 CategoryMethods.updateCategory = async (req, res) => {  
   try {
-    const permissions = Permission.can(req.userRol).updateAny("category").granted;
+    const permissions = Permission.can(req.userRol).updateOwn("category").granted;
     if(permissions){
       const {
         CategoryId,
@@ -68,6 +68,13 @@ CategoryMethods.updateCategory = async (req, res) => {
       if(CategoryId){
         const getCategory = await Category.findById(CategoryId);
         if(getCategory){
+          const checkName = await Category.find({category_name: category_name},{_id: true});
+          if( checkName.length > 0 ){
+            return res.status(400).jso({
+              status: false,
+              message: "Este nombre ya se encuentra en uso"
+            })
+          }
           const newCategory = getCategory.updateOne({
             category_name: category_name,
             updated_at: new Date()
@@ -107,7 +114,7 @@ CategoryMethods.updateCategory = async (req, res) => {
 
 CategoryMethods.deleteCategory = async (req, res) => {
   try {
-    const permissions = Permission.can(req.userRol).deleteAny("category").granted;
+    const permissions = Permission.can(req.userRol).deleteOwn("category").granted;
     if(permissions){
       const{
         CategoryId
@@ -206,29 +213,4 @@ CategoryMethods.createCategory = async (req, res) => {
   }
 };
 
-/*
-CategoryMethods.getUsers = async (req, res) => {
-  try {
-    const products = await User.find();
-    if(products){
-      console.log(products);
-      return res.status(201).json({
-        status: true,
-        data: products,
-        message: "Se han encontrado productos de este supermercado.",
-      });
-    }
-    return res.status(400).json({
-      status: false,
-      message: "No se encontraron usuarios"
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(405).json({
-      status: false,
-      message: "Ha ocurrido un error, por favor intentalo nuevamente.",
-    });
-  }
-};
-*/
 export { CategoryMethods as CategoryController };

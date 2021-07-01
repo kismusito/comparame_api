@@ -5,10 +5,6 @@ const categorySchema = new Schema({
         type: String,
         require: true,
     },
-    products: [{
-        type: Types.ObjectId,
-        ref: "Product"
-    }],
     created_at: {
         type: Date,
         default: new Date(),
