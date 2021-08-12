@@ -5,10 +5,8 @@ const router = express.Router();
 
 router
     .get("/", CategoryController.getCategories)
-    .get("/{id}", CategoryController.getCategory)
-    //.get("/user",  CategoryController.getUsers)
+    .get("/:id", CategoryController.getCategory)
     .post("/", AuthMiddleware, CategoryController.createCategory)
     .put("/", AuthMiddleware, CategoryController.updateCategory)
     .delete("/", AuthMiddleware, CategoryController.deleteCategory);
-    ;
 export { router as CategoryRoutes };

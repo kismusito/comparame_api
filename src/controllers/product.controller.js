@@ -230,40 +230,32 @@ ProductMethods.TakeAwayProductCategory = async (req, res) => {
         if (ProductID) {
           const getProduct = await Product.findById(ProductID);
           const getCategory = await Category.findById(CategoryID);
-          if (getProduct) {
-            if (getCategory) {
-              const checkCategoryProduct = await Category.find(
-                { _id: CategoryID, products: ProductID },
-                { _id: true }
-              );
-              if (checkCategoryProduct) {
+          if(getProduct){
+            if(getCategory){
+              const checkCategoryProduct = await Product.find(
+                {_id: ProductID, categories: CategoryID},
+                {_id: true});
+              if(checkCategoryProduct){
                 //Quitar la categoria del producto, Pero manteniendo las demas categorias del producto
-                const TakeAwayCategory = await getProduct.updateOne({
-                  categories: null,
-                  updated_at: new Date(),
-                });
-                if (!TakeAwayCategory) {
+                const TakeAwayCategory = await getProduct.updateOne(
+                  {
+                    updated_at: new Date()
+                  },
+                  {
+                    $pull: { categories: { _id: CategoryID} } 
+                  },
+                );
+                if(!TakeAwayCategory){
                   return res.status(400).json({
                     status: false,
                     message:
                       "no se pudo actualizar el cambio de categoria en el producto",
                   });
                 }
-                //Quitar el producto de la categoria, Pero manteniendo los demas productos de la categoria
-                const TakeAwayProduct = await getCategory.updateOne({
-                  products: null,
-                  updated_at: new Date(),
-                });
-                if (!TakeAwayProduct) {
-                  return res.status(400).json({
-                    status: false,
-                    message:
-                      "no se pudo actualizar el cambio de producto en la categoria, pero se realizo el cambio en el producto",
-                  });
-                }
                 return res.status(200).json({
                   status: true,
-                  message: "Se actualizo el producto y la categoria",
+                  message:
+                    "Se elimino la categoria del producto",
                 });
               }
               return res.status(400).json({
@@ -318,32 +310,25 @@ ProductMethods.InsertProductCategory = async (req, res) => {
               );
               if (!checkCategoryProduct) {
                 //Añadir la categoria al producto, Pero manteniendo las demas categorias del producto
-                const InsertCategory = await getProduct.updateOne({
-                  categories: CategoryID,
-                  updated_at: new Date(),
-                });
-                if (!InsertCategory) {
+                const InsertCategory = await getProduct.updateOne(
+                  {
+                    updated_at: new Date()
+                  },
+                  {
+                    $push: { categories: { _id: CategoryID} } 
+                  },
+                  );
+                if(!InsertCategory){
                   return res.status(400).json({
                     status: false,
                     message:
                       "no se pudo actualizar el cambio de categoria en el producto",
                   });
                 }
-                //Añadir el producto de la categoria, Pero manteniendo los demas productos de la categoria
-                const InsertProduct = await getCategory.updateOne({
-                  products: ProductID,
-                  updated_at: new Date(),
-                });
-                if (!InsertProduct) {
-                  return res.status(400).json({
-                    status: false,
-                    message:
-                      "no se pudo actualizar el cambio de producto en la categoria, pero se realizo el cambio en el producto",
-                  });
-                }
                 return res.status(200).json({
                   status: true,
-                  message: "Se actualizo el producto y la categoria",
+                  message:
+                    "Se añadio la categoria al producto",
                 });
               }
               return res.status(400).json({
@@ -596,13 +581,13 @@ ProductMethods.searchProductNameSupermarket = async (req, res) => {
 
 ProductMethods.searchProductNameGen = async (req, res) => {
   try {
-    const { product_name } = req.body;
-    if (product_name) {
-      const checkProduct = await Product.find(
-        { product_name: product_name },
-        { _id: true }
-      ).populate("categories");
-      if (checkProduct) {
+    const {
+      product_name
+    } = req.body;
+    if(product_name){
+      const checkProduct = await Product.find({product_name: product_name},{_id: true})
+      .populate("categories");     
+      if(checkProduct){
         return res.status(200).json({
           status: true,
           data: checkProduct,

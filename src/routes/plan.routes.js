@@ -5,7 +5,7 @@ const router = express.Router();
 
 router
     .get("/", AuthMiddleware, PlanController.getPlans)
-    .get("/{id}", AuthMiddleware, PlanController.getPlan)
+    .get("/:id", AuthMiddleware, PlanController.getPlan)
     .post("/", AuthMiddleware, PlanController.createPlan)
     .put("/", AuthMiddleware, PlanController.updatePlan)
     .delete("/", AuthMiddleware, PlanController.deletePlan);

@@ -395,7 +395,7 @@ supermarketMethods.createSupermarketHeadsquare = async (req, res) => {
                   });
 
                   return res.status(201).json({
-                    status: false,
+                    status: true,
                     message: "La sede se ha registrado correctamente.",
                   });
                 } else {
