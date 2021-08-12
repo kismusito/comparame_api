@@ -10,6 +10,7 @@ import {
     ProductRoutes,
     SupermarketRoutes,
     CategoryRoutes,
+    ProductListRoutes
 } from "./routes";
 
 // Use only in development mode.
@@ -41,5 +42,6 @@ app.use("/rol", RolRoutes);
 app.use("/product", ProductRoutes);
 app.use("/supermarket", SupermarketRoutes);
 app.use("/category", CategoryRoutes);
+app.use("/productList", ProductListRoutes);
 
 export default app;

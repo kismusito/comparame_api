@@ -5,3 +5,4 @@ export * from "./profile.routes";
 export * from "./product.routes";
 export * from "./supermarket.routes";
 export * from "./category.routes";
+export * from "./user_product_list.routes";
