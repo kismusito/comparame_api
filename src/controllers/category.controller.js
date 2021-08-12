@@ -11,7 +11,7 @@ CategoryMethods.getCategory = async (req, res) => {
   try {
     const permissions = Permission.can(req.userRol).readAny("category").granted;
     if(permissions){
-      const id = req.params;
+      const {id} = req.params;
       const checkCategory = await Category.findById(id);
       if (checkCategory) {
         return res.status(201).json({
@@ -57,6 +57,7 @@ CategoryMethods.getCategories = async (req, res) => {
     });
   }
 };
+
 CategoryMethods.updateCategory = async (req, res) => {  
   try {
     const permissions = Permission.can(req.userRol).updateOwn("category").granted;
