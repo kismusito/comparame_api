@@ -87,6 +87,56 @@ ProductMethods.getProduct = async (req, res) => {
   }
 };
 
+ProductMethods.compareProducts = async (req, res) => {
+  try {
+    const { id, difference } = req.params;
+    const checkProduct = await Product.findById(id);
+    if (checkProduct) {
+      const filters = {};
+      const productPrice = Number(checkProduct.product_price);
+      let priceDifference = 10000;
+
+      if (difference) priceDifference = Number(difference);
+
+      filters.product_price = {
+        $gte: productPrice - priceDifference,
+        $lte: productPrice + priceDifference,
+      };
+      filters.product_name = {
+        $regex: ".*" + checkProduct.product_name + ".*",
+        $options: "i",
+      };
+
+      const products = await Product.find({
+        ...filters,
+      });
+
+      if (products.length > 0) {
+        return res.status(200).json({
+          status: true,
+          data: products,
+          message: "Se han encontrado producto.",
+        });
+      } else {
+        return res.status(200).json({
+          status: false,
+          message: "No hay productos similares.",
+        });
+      }
+    } else {
+      return res.status(400).json({
+        status: false,
+        message: "No se han encontrado producto..",
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      status: false,
+      message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+    });
+  }
+};
+
 ProductMethods.updateProduct = async (req, res) => {
   try {
     const permissions = Permission.can(req.userRol).updateOwn(
@@ -171,14 +221,13 @@ ProductMethods.updateProduct = async (req, res) => {
 
 ProductMethods.TakeAwayProductCategory = async (req, res) => {
   try {
-    const permissions = Permission.can(req.userRol).updateOwn("product").granted;
-    if(permissions){
-      const {
-        CategoryID,
-        ProductID
-      } = req.body;
-      if(CategoryID){
-        if(ProductID){
+    const permissions = Permission.can(req.userRol).updateOwn(
+      "product"
+    ).granted;
+    if (permissions) {
+      const { CategoryID, ProductID } = req.body;
+      if (CategoryID) {
+        if (ProductID) {
           const getProduct = await Product.findById(ProductID);
           const getCategory = await Category.findById(CategoryID);
           if(getProduct){
@@ -211,61 +260,55 @@ ProductMethods.TakeAwayProductCategory = async (req, res) => {
               }
               return res.status(400).json({
                 status: false,
-                message:
-                  "El producto no pertenece a dicha categoria",
+                message: "El producto no pertenece a dicha categoria",
               });
             }
             return res.status(400).json({
               status: false,
-              message:
-                "No se encontro la categoria",
+              message: "No se encontro la categoria",
             });
           }
           return res.status(400).json({
             status: false,
-            message:
-              "No encontro producto",
+            message: "No encontro producto",
           });
         }
         return res.status(400).json({
           status: false,
-          message:
-            "No se ingreso producto",
+          message: "No se ingreso producto",
         });
       }
       return res.status(400).json({
         status: false,
-        message:
-          "permisos",
+        message: "permisos",
       });
     }
-  }catch (error) {
+  } catch (error) {
     return res.status(400).json({
       status: false,
-      message:
-        "Ha ocurrido un error, por favor intentalo nuevamente.",
+      message: "Ha ocurrido un error, por favor intentalo nuevamente.",
     });
   }
 };
 
 ProductMethods.InsertProductCategory = async (req, res) => {
   try {
-    const permissions = Permission.can(req.userRol).updateOwn("product").granted;
-    if(permissions){
-      const {
-        CategoryID,
-        ProductID
-      } = req.body;
-      if(CategoryID){
-        if(ProductID){
+    const permissions = Permission.can(req.userRol).updateOwn(
+      "product"
+    ).granted;
+    if (permissions) {
+      const { CategoryID, ProductID } = req.body;
+      if (CategoryID) {
+        if (ProductID) {
           const getProduct = await Product.findById(ProductID);
           const getCategory = await Category.findById(CategoryID);
-          if(getProduct){
-            if(getCategory){
+          if (getProduct) {
+            if (getCategory) {
               const checkCategoryProduct = await Category.find(
-                {_id:CategoryID, products: ProductID},
-                {_id: true});
-              if(!checkCategoryProduct){
+                { _id: CategoryID, products: ProductID },
+                { _id: true }
+              );
+              if (!checkCategoryProduct) {
                 //Añadir la categoria al producto, Pero manteniendo las demas categorias del producto
                 const InsertCategory = await getProduct.updateOne(
                   {
@@ -290,43 +333,36 @@ ProductMethods.InsertProductCategory = async (req, res) => {
               }
               return res.status(400).json({
                 status: false,
-                message:
-                  "El producto ya pertenece a dicha categoria",
+                message: "El producto ya pertenece a dicha categoria",
               });
             }
             return res.status(400).json({
               status: false,
-              message:
-                "No se encontro la categoria",
+              message: "No se encontro la categoria",
             });
           }
           return res.status(400).json({
             status: false,
-            message:
-              "No encontro producto",
+            message: "No encontro producto",
           });
         }
         return res.status(400).json({
           status: false,
-          message:
-            "No se ingreso producto",
+          message: "No se ingreso producto",
         });
       }
       return res.status(400).json({
         status: false,
-        message:
-          "permisos",
+        message: "permisos",
       });
     }
-  }catch (error) {
+  } catch (error) {
     return res.status(400).json({
       status: false,
-      message:
-        "Ha ocurrido un error, por favor intentalo nuevamente.",
+      message: "Ha ocurrido un error, por favor intentalo nuevamente.",
     });
   }
 };
-
 
 ProductMethods.deleteProduct = async (req, res) => {
   try {
@@ -515,14 +551,15 @@ ProductMethods.createProduct = async (req, res) => {
 
 ProductMethods.searchProductNameSupermarket = async (req, res) => {
   try {
-    const {
-      product_name
-    } = req.body;
-    if(product_name){
-      const checkProduct = await Product.find({product_name: product_name},{_id: true})
-      .populate("categories")
-      .populate("supermarket");
-      if(checkProduct){
+    const { product_name } = req.body;
+    if (product_name) {
+      const checkProduct = await Product.find(
+        { product_name: product_name },
+        { _id: true }
+      )
+        .populate("categories")
+        .populate("supermarket");
+      if (checkProduct) {
         return res.status(200).json({
           status: true,
           data: checkProduct,
@@ -532,8 +569,8 @@ ProductMethods.searchProductNameSupermarket = async (req, res) => {
     }
     return res.status(400).json({
       status: false,
-      message: "No se encontro un producto por dicho nombre"
-    })
+      message: "No se encontro un producto por dicho nombre",
+    });
   } catch (error) {
     return res.status(405).json({
       status: false,
@@ -560,8 +597,8 @@ ProductMethods.searchProductNameGen = async (req, res) => {
     }
     return res.status(400).json({
       status: false,
-      message: "No se encontro un producto por dicho nombre"
-    })
+      message: "No se encontro un producto por dicho nombre",
+    });
   } catch (error) {
     return res.status(405).json({
       status: false,
@@ -569,6 +606,5 @@ ProductMethods.searchProductNameGen = async (req, res) => {
     });
   }
 };
-
 
 export { ProductMethods as ProductController };

@@ -8,9 +8,11 @@ router
   .get("/:id", ProductController.getProduct)
   .post("/", AuthMiddleware, ProductController.createProduct)
   .put("/", AuthMiddleware, ProductController.updateProduct)
-  .put("/TA",ProductController.TakeAwayProductCategory)
-  .put("/In",ProductController.InsertProductCategory)
+  .put("/TA", ProductController.TakeAwayProductCategory)
+  .put("/In", ProductController.InsertProductCategory)
   .delete("/", AuthMiddleware, ProductController.deleteProduct)
   .get("/searchS", ProductController.searchProductNameSupermarket)
-  .get("/search", ProductController.searchProductNameGen);
+  .get("/search", ProductController.searchProductNameGen)
+  .get("/compare/:id", ProductController.compareProducts);
+
 export { router as ProductRoutes };
