@@ -17,12 +17,12 @@ CategoryMethods.getCategory = async (req, res) => {
         return res.status(201).json({
           status: true,
           data: checkCategory,
-          message: "Se han encontrado la categoria.",
+          message: "Se ha encontrado la categoria.",
         });
       }
       return res.status(400).json({
         status: false,
-        message: "No han encontrado la categoria..",
+        message: "No se ha encontrado la categoria.",
       });
     }
   } catch (error) {
@@ -37,7 +37,7 @@ CategoryMethods.getCategories = async (req, res) => {
   try {
     const permissions = Permission.can(req.userRol).readAny("category").granted;
     if(permissions){
-      const categories = await Category.find();
+      const categories = await Category.find({},{_id: true});
       if(categories){
         return res.status(201).json({
           status: true,
