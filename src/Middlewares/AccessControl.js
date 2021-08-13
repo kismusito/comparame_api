@@ -17,7 +17,10 @@ ac.grant("supermarket")
     .readOwn("product")
     .createOwn("product")
     .updateOwn("product")
-    .deleteOwn("product");
+    .deleteOwn("product")
+    .createAny("category")
+    .deleteOwn("category")
+    .updateOwn("category");
 
 ac.grant("supermarket")
     .createOwn("headsquare")
@@ -29,10 +32,7 @@ ac.grant("admin")
     .extend("supermarket")
     .createAny("plan")
     .updateAny("plan")
-    .deleteAny("plan")
-    .createAny("category")
-    .deleteAny("category")
-    .updateAny("category");
+    .deleteAny("plan");
 
 ac.grant("admin").createAny("rol").updateAny("rol").deleteAny("rol");
 
