@@ -607,4 +607,39 @@ ProductMethods.searchProductNameGen = async (req, res) => {
   }
 };
 
+ProductMethods.searchProductCategory = async (req, res) => {
+  try{
+    const {
+      category_name
+    } = req.body;
+    if(category_name){
+      const checkCategory = await Category.find(
+        {category_name: category_name},
+        {_id: true}
+      );
+      const checkProduct = await Product.find(
+        {categories: CategoryID},
+        {_id: true}
+      )
+        .populate("categories")
+        .populate("supermarket");   
+      if(checkProduct){
+        return res.status(200).json({
+          status: true,
+          data: checkProduct,
+          message: "Se encontraron estos productos",
+        });
+      }
+    }
+    return res.status(400).json({
+      status: false,
+      message: "No se encontro un producto por dicho nombre",
+    });
+  } catch (error) {
+    return res.status(405).json({
+      status: false,
+      message: "Ha ocurrido un error, por favor intentalo nuevamente.",
+    });
+  }
+};
 export { ProductMethods as ProductController };
