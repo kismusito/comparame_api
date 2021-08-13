@@ -618,7 +618,7 @@ ProductMethods.searchProductCategory = async (req, res) => {
         {_id: true}
       );
       const checkProduct = await Product.find(
-        {categories: CategoryID},
+        {categories: checkCategory},
         {_id: true}
       )
         .populate("categories")

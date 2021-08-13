@@ -13,6 +13,7 @@ router
   .delete("/", AuthMiddleware, ProductController.deleteProduct)
   .get("/searchS", ProductController.searchProductNameSupermarket)
   .get("/search", ProductController.searchProductNameGen)
+  .get("/searchCat", ProductController.searchProductCategory)
   .get("/compare/:id", ProductController.compareProducts);
 
 export { router as ProductRoutes };
