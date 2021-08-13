@@ -8,7 +8,7 @@ import User from "../Models/User";
 import Product from "../Models/Product";
 
 CategoryMethods.getCategory = async (req, res) => {
-  try {
+  //try {
     const permissions = Permission.can(req.userRol).readAny("category").granted;
     if(permissions){
       const {id} = req.params;
@@ -25,16 +25,16 @@ CategoryMethods.getCategory = async (req, res) => {
         message: "No se ha encontrado la categoria.",
       });
     }
-  } catch (error) {
+  /*} catch (error) {
     return res.status(405).json({
       status: false,
       message: "Ha ocurrido un error, por favor intentalo nuevamente.",
     });
-  }
+  }*/
 };
 
 CategoryMethods.getCategories = async (req, res) => {
-  try {
+  //try {
     const permissions = Permission.can(req.userRol).readAny("category").granted;
     if(permissions){
       const categories = await Category.find({},{_id: true});
@@ -50,12 +50,12 @@ CategoryMethods.getCategories = async (req, res) => {
         message: "No se encontraron categorias.",
       });
     }
-  } catch (error) {
+  /*} catch (error) {
     return res.status(405).json({
       status: false,
       message: "Ha ocurrido un error, por favor intentalo nuevamente.",
     });
-  }
+  }*/
 };
 
 CategoryMethods.updateCategory = async (req, res) => {  
